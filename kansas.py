@@ -51,7 +51,7 @@ class Lawrence(object):
 c = re.compile(u'[bcdfghijklmpqrtvwxyz]')
 v = re.compile(u'[aeiouns]')
 s = re.compile(u'[áéíóú]')
-stress = u"'"
+stress = u"ˈ"
 
 
 
