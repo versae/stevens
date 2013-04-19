@@ -8,8 +8,8 @@ Getting Started
 ---------------
 
 ```python
->>> from stevens import transcriber
->>> transcriber(u"Hola, qué tal", lang="es_ES")
+>>> from stevens import transcribe
+>>> transcribe(u"Hola, qué tal", lang="es_ES")
 
 >>> from stevens import get_transcriptor
 
