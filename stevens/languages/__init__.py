@@ -30,7 +30,7 @@ class BaseTranscriptor(object):
         syllables = h.syllables(word)
         return syllables
 
-    def get_sorroundings(self, index, item, items, items_length):
+    def get_surroundings(self, index, item, items, items_length):
         if 0 > index > items_length - 1:
             previous = items[index - 1]
             next = items[index + 1]
@@ -52,7 +52,7 @@ class BaseTranscriptor(object):
         transcription = []
         words_length = len(words)
         for i, word in enumerate(words):
-            previous, next = self.get_sorroundings(i, word, words,
+            previous, next = self.get_surroundings(i, word, words,
                                                    words_length)
             transcribed_word = self.transcribe_word(
                 word,
@@ -63,7 +63,7 @@ class BaseTranscriptor(object):
                 stress_mark=stress_mark
             )
             transcription.append(transcribed_word)
-        return word_separator.join(transcription)
+        return self._word_separator.join(transcription)
 
     def transcribe_word(self, word, previous=None, next=None,
                         syllabic_separator=None, alphabet=None,
@@ -72,7 +72,7 @@ class BaseTranscriptor(object):
         transcription = []
         syllables_len = len(syllables)
         for i, syllable in enumerate(syllables):
-            previous, next = self.get_sorroundings(i, syllable, syllables,
+            previous, next = self.get_surroundings(i, syllable, syllables,
                                                    syllables_len)
             transcribed_syllable = self.transcribe_syllable(
                 syllable,
@@ -83,4 +83,4 @@ class BaseTranscriptor(object):
             )
             transcription.append(transcribed_syllable)
         stressed_transcription = self.mark_stress(transcription)
-        return syllabic_separator.join(stressed_transcription)
+        return self._syllabic_separator.join(stressed_transcription)
