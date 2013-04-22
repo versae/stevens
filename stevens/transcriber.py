@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 from importlib import import_module
+from urllib2 import HTTPError
+
+try:
+    import langid
+except ImportError:
+    langid = None
 from hyphen import Hyphenator
 from hyphen.dictools import install, is_installed
-from urllib2 import HTTPError
 
 
 class NotLanguageSupported(Exception):
@@ -11,7 +16,7 @@ class NotLanguageSupported(Exception):
 
 def get_transcriptor(lang="es_ES", alphabet="IPA",
                      syllabic_separator=u".", stress_mark=u"'",
-                     word_separator=u"|", auto=False):
+                     word_separator=u"|"):
     """
     Return a `Transcriptor` object
 
@@ -23,9 +28,6 @@ def get_transcriptor(lang="es_ES", alphabet="IPA",
     :param auto: boolean to perform an automatic language identification
     :return: a `Transcriptor` object
     """
-    if auto:
-        # Use langid to identify the language
-        raise NotImplementedError("Use langid.py to identify the language")
     if not syllabic_separator:
         syllabic_separator = u"."
     alphabet = alphabet.lower()
@@ -70,13 +72,16 @@ def transcribe(text, lang="es_ES", alphabet="IPA",
     :param auto: boolean to perform an automatic language identification
     :return: string with the phonetic transcription of `text`
     """
+    if auto:
+        if not langid:
+            raise ImportError("Please, install langid")
+        lang = langid.classify(text)[0]
     transcriptor = get_transcriptor(
         lang=lang,
         alphabet=alphabet,
         syllabic_separator=syllabic_separator,
         word_separator=word_separator,
-        stress_mark=stress_mark,
-        auto=auto)
+        stress_mark=stress_mark)
     return transcriptor.transcribe(
         text=text,
         syllabic_separator=syllabic_separator,
