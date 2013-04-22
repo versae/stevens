@@ -1,17 +1,13 @@
 # -*- coding: utf-8 -*-
 from importlib import import_module
-from urllib2 import HTTPError
 
 try:
     import langid
 except ImportError:
     langid = None
-from hyphen import Hyphenator
-from hyphen.dictools import install, is_installed
 
-
-class NotLanguageSupported(Exception):
-    pass
+from stevens.hyphenation import get_hyphenator
+from stevens.exceptions import NotLanguageSupported
 
 
 def get_transcriptor(lang="es_ES", alphabet="IPA",
@@ -31,18 +27,9 @@ def get_transcriptor(lang="es_ES", alphabet="IPA",
         syllabic_separator = u"."
     alphabet = alphabet.lower()
     # Language identification
-    error_message = "Unsupported language code '{}'".format(lang)
     if lang.lower() in ("es", "es_es"):
         lang = "es_ES"
-        try:
-            hyphenator = Hyphenator(lang)
-        except IOError:
-            try:
-                if not is_installed(lang):
-                    install(lang)
-                    hyphenator = Hyphenator(lang)
-            except HTTPError:
-                raise NotLanguageSupported(error_message)
+        hyphenator = get_hyphenator(lang)
         module = import_module("stevens.languages.es.castillian")
         transcriptor = module.Transcriptor(
             hyphenator=hyphenator,
@@ -53,10 +40,10 @@ def get_transcriptor(lang="es_ES", alphabet="IPA",
         )
         return transcriptor
     else:
-        raise NotLanguageSupported(error_message)
+        raise NotLanguageSupported(lang)
 
 
-def transcribe(text, lang="es_ES", alphabet="IPA",
+def transcribe(text, lang=None, alphabet="IPA",
                syllabic_separator=u".", stress_mark=u"'", word_separator=u"|",
                auto_lang=False):
     """
@@ -71,7 +58,7 @@ def transcribe(text, lang="es_ES", alphabet="IPA",
     :param auto_lang: boolean to perform an automatic language identification
     :return: string with the phonetic transcription of `text`
     """
-    if auto_lang:
+    if auto_lang or not lang:
         if not langid:
             raise ImportError("Please, install langid")
         lang = langid.classify(text)[0]

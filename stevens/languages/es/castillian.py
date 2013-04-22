@@ -2,12 +2,15 @@
 import re
 
 from stevens.languages import BaseTranscriptor
+from stevens.hyphenation import get_hyphenator
 
 
 class Transcriptor(BaseTranscriptor):
 
     def __init__(self, *args, **kwargs):
         super(Transcriptor, self).__init__(*args, **kwargs)
+        if not self._hyphenator:
+            self._hyphenator = get_hyphenator("es_ES")
         self._punctuation = re.compile(r"[ \.,\?\!¡¿\n\t\s]+")
         self._grave = re.compile(u'[aeiouns]')
         self._irregular = re.compile(u'[áéíóú]')

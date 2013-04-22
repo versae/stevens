@@ -4,13 +4,13 @@ import re
 
 class BaseTranscriptor(object):
 
-    def __init__(self, hyphenator, text=None, lang="es_ES", alphabet="IPA",
+    def __init__(self, text=None, hyphenator=None, lang="es_ES", alphabet="IPA",
                  syllabic_separator=u".", word_separator=u"|",
                  sentence_separator=u"/", flattern=True,
                  stress_mark=u"'"):
         """
-        :param hyphenator: Hyphenator object
         :param text: unicode string to transcribe
+        :param hyphenator: Hyphenator object
         :param lang: string with the ISO 639-1 or IETF language tag of `text`
         :param alphabet: string with the name of the phonetic alphabet to use
         :param syllabic_separator: string with the syllabic separator character
