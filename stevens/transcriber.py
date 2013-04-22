@@ -25,7 +25,6 @@ def get_transcriptor(lang="es_ES", alphabet="IPA",
     :param syllabic_separator: string with the syllabic separator character
     :param stress_mark: string to mark the stress in words
     :param word_separator: string with the word separator character
-    :param auto: boolean to perform an automatic language identification
     :return: a `Transcriptor` object
     """
     if not syllabic_separator:
@@ -59,7 +58,7 @@ def get_transcriptor(lang="es_ES", alphabet="IPA",
 
 def transcribe(text, lang="es_ES", alphabet="IPA",
                syllabic_separator=u".", stress_mark=u"'", word_separator=u"|",
-               auto=False):
+               auto_lang=False):
     """
     Get the phonetic transcription of `text`
 
@@ -69,10 +68,10 @@ def transcribe(text, lang="es_ES", alphabet="IPA",
     :param syllabic_separator: string with the syllabic separator character
     :param stress_mark: string to mark the stress in words
     :param word_separator: string with the word separator character
-    :param auto: boolean to perform an automatic language identification
+    :param auto_lang: boolean to perform an automatic language identification
     :return: string with the phonetic transcription of `text`
     """
-    if auto:
+    if auto_lang:
         if not langid:
             raise ImportError("Please, install langid")
         lang = langid.classify(text)[0]

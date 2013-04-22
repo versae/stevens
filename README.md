@@ -13,9 +13,11 @@ Getting Started
 
 >>> from stevens import get_transcriptor
 
->>> EsTranscriptor = get_transcriptor("es_ES")
->>> obj = EsTranscriptor(u"Hola, qué tal")
+>>> CastillianSpanishTranscriptor = get_transcriptor("es_ES")
+>>> tr = CastillianSpanishTranscriptor(u"Hola, qué tal")
 
->>> obj.get_syllables()
+>>> from stevens.languages.es.castillian import Transcriptor
+>>> tr = castillian.Transcriptor(u"Buenos días")
+>>> tr.transcribe()
 ```
 
