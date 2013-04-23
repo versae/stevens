@@ -31,14 +31,14 @@ class BaseTranscriptor(object):
         return syllables
 
     def get_surroundings(self, index, item, items, items_length):
-        if 0 > index > items_length - 1:
+        if 0 < index < items_length - 1:
             previous = items[index - 1]
             next = items[index + 1]
         else:
             previous = next = None
             if index > 0:
                 previous = items[index - 1]
-            elif index > items_length - 1:
+            elif index < items_length - 1:
                 next = items[index + 1]
         return previous, next
 
