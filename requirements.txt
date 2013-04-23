@@ -1,1 +1,2 @@
 PyHyphen==2.0.2
+langid==1.1.3dev

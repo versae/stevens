@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 from importlib import import_module
-from hyphen import Hyphenator
-from hyphen.dictools import install, is_installed
-from urllib2 import HTTPError
 
+try:
+    import langid
+except ImportError:
+    langid = None
 
-class NotLanguageSupported(Exception):
-    pass
+from stevens.hyphenation import get_hyphenator
+from stevens.exceptions import NotLanguageSupported
 
 
 def get_transcriptor(lang="es_ES", alphabet="IPA",
                      syllabic_separator=u".", stress_mark=u"'",
-                     word_separator=u"|", auto=False):
+                     word_separator=u"|"):
     """
     Return a `Transcriptor` object
 
@@ -20,28 +21,15 @@ def get_transcriptor(lang="es_ES", alphabet="IPA",
     :param syllabic_separator: string with the syllabic separator character
     :param stress_mark: string to mark the stress in words
     :param word_separator: string with the word separator character
-    :param auto: boolean to perform an automatic language identification
     :return: a `Transcriptor` object
     """
-    if auto:
-        # Use langid to identify the language
-        raise NotImplementedError("Use langid.py to identify the language")
     if not syllabic_separator:
         syllabic_separator = u"."
     alphabet = alphabet.lower()
     # Language identification
-    error_message = "Unsupported language code '{}'".format(lang)
     if lang.lower() in ("es", "es_es"):
         lang = "es_ES"
-        try:
-            hyphenator = Hyphenator(lang)
-        except IOError:
-            try:
-                if not is_installed(lang):
-                    install(lang)
-                    hyphenator = Hyphenator(lang)
-            except HTTPError:
-                raise NotLanguageSupported(error_message)
+        hyphenator = get_hyphenator(lang)
         module = import_module("stevens.languages.es.castillian")
         transcriptor = module.Transcriptor(
             hyphenator=hyphenator,
@@ -52,12 +40,12 @@ def get_transcriptor(lang="es_ES", alphabet="IPA",
         )
         return transcriptor
     else:
-        raise NotLanguageSupported(error_message)
+        raise NotLanguageSupported(lang)
 
 
-def transcribe(text, lang="es_ES", alphabet="IPA",
+def transcribe(text, lang=None, alphabet="IPA",
                syllabic_separator=u".", stress_mark=u"'", word_separator=u"|",
-               auto=False):
+               auto_lang=False):
     """
     Get the phonetic transcription of `text`
 
@@ -67,16 +55,19 @@ def transcribe(text, lang="es_ES", alphabet="IPA",
     :param syllabic_separator: string with the syllabic separator character
     :param stress_mark: string to mark the stress in words
     :param word_separator: string with the word separator character
-    :param auto: boolean to perform an automatic language identification
+    :param auto_lang: boolean to perform an automatic language identification
     :return: string with the phonetic transcription of `text`
     """
+    if auto_lang or not lang:
+        if not langid:
+            raise ImportError("Please, install langid")
+        lang = langid.classify(text)[0]
     transcriptor = get_transcriptor(
         lang=lang,
         alphabet=alphabet,
         syllabic_separator=syllabic_separator,
         word_separator=word_separator,
-        stress_mark=stress_mark,
-        auto=auto)
+        stress_mark=stress_mark)
     return transcriptor.transcribe(
         text=text,
         syllabic_separator=syllabic_separator,
