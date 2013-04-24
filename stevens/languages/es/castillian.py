@@ -18,12 +18,13 @@ class Transcriptor(BaseTranscriptor):
         self._punctuation = re.compile(r"[ \.,\?\!¡¿\n\t\s]+")
         self._grave = re.compile(u'[aeiouns]')
         self._irregular = re.compile(u'[áéíóú]')
+        self._double_letters_set = set(_double_letters.keys())
         self._double_letters = {u'rr':u'R',u'll':u'ʎ',u'ch':u'ʧ',u'gu':u'g',u'qu':u'q'}
         self._nasals = set([u'm',u'n',u'ñ'])
         self._laterals = set([u'l'])
         self._vowels = set([u'a',u'e',u'i',u'o',u'u',u'á',u'é',u'í',u'ó',u'ú'])
         self._voiced = set([u'a',u'e',u'i',u'o',u'u',u'b',u'd',u'g',u'l',u'm',
-                        u'n',u'r',u'R',u'v',u'w'])
+                            u'n',u'r',u'R',u'v',u'w'])
         self._voiced_consonants = set([u'b',u'd',u'g',u'l',u'm',u'n',u'r',u'R',u'v'])
         self._labiodentals = set([u'f',u'v'])
         self._coronals = set([u'd',u'l',u'r',u'n',u's',u't',u'z',u'ʧ'])
@@ -80,7 +81,7 @@ class Transcriptor(BaseTranscriptor):
         if len(syllable) == 1:
             return syllable
         double = syllable[0] + syllable[1]
-        if double in self._double_letters.keys():
+        if double in self._double_letters_set:
             syllable = self._double_letters[double] + syllable[2:] 
         return syllable
 
