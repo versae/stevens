@@ -253,9 +253,8 @@ class Transcriptor(BaseTranscriptor):
             return syllable
         return locals()
 
-    def mark_stress(self, syllable_list, stress_mark=None):
+    def mark_stress(self, syllable_list):
         ### maybe change name to find_stress
-        stress_mark = stress_mark or self._stress_mark
         if len(syllable_list) == 1:
             return None 
             for index, syllable in enumerate(syllable_list):
