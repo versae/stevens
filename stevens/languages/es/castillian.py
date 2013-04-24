@@ -55,7 +55,7 @@ class Transcriptor(BaseTranscriptor):
                 cross_syllabic_next,0
             )
         for index, letter in enumerate(syllable):
-            previous, next = get_surroundings(
+            previous, next = self.get_surroundings(
                 index,
                 letter,
                 syllable,
