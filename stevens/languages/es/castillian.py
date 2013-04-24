@@ -123,8 +123,7 @@ class Transcriptor(BaseTranscriptor):
         def transcribe_g(previous, next, index):
             if next in [u'i',u'e']:
                 return u'x'
-            elif not previous \
-                    or previous in self._nasals + self._pause:
+            elif not previous or previous in self._nasals + self._pause:
                 return u'ɡ'
             else:
                 return u'ɣ'
@@ -190,8 +189,7 @@ class Transcriptor(BaseTranscriptor):
             return u'k'
 
         def transcribe_r(previous, next, index):
-            if not previous \
-                    or previous in [self._pause,u'l',u'n',u's']:
+            if not previous or previous in [self._pause,u'l',u'n',u's']:
                 return u'r'
             else:
                 return u'ɾ'
