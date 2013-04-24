@@ -18,8 +18,8 @@ class Transcriptor(BaseTranscriptor):
         self._punctuation = re.compile(r"[ \.,\?\!¡¿\n\t\s]+")
         self._grave = re.compile(u'[aeiouns]')
         self._irregular = re.compile(u'[áéíóú]')
-        self._double_letters_set = set(self._double_letters.keys())
         self._double_letters = {u'rr':u'R',u'll':u'ʎ',u'ch':u'ʧ',u'gu':u'g',u'qu':u'q'}
+        self._double_letters_set = set(self._double_letters.keys())
         self._nasals = set([u'm',u'n',u'ñ'])
         self._laterals = set([u'l'])
         self._vowels = set([u'a',u'e',u'i',u'o',u'u',u'á',u'é',u'í',u'ó',u'ú'])
