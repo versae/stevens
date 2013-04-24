@@ -259,7 +259,7 @@ class Transcriptor(BaseTranscriptor):
         ### maybe change name to find_stress
         stress_mark = stress_mark or self._stress_mark
         if len(syllable_list) == 1:
-            return None # should this be False?
+            return None 
             for index, syllable in enumerate(syllable_list):
                 if self._irregular.search(syllable):
                     return index
@@ -267,4 +267,3 @@ class Transcriptor(BaseTranscriptor):
                 return len(syllable_list) - 2
             else:
                 return len(syllable_list) - 1
-
