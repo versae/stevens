@@ -18,21 +18,18 @@ class Transcriptor(BaseTranscriptor):
         self._punctuation = re.compile(r"[ \.,\?\!¡¿\n\t\s]+")
         self._grave = re.compile(u'[aeiouns]')
         self._irregular = re.compile(u'[áéíóú]')
-        self._rr = re.compile(u'rr')
-        self._ll = re.compile(u'll')
-        self._ch = re.compile(u'ch')
-        self._gu = re.compile(u'gu')
-        self._qu = re.compile(u'qu')
-        self._nasals = u'mnñ'
-        self._laterals = u'l'
-        self._vowels = u'aeiouáéíóú'
-        self._voiced = u'aeioubdglmnrRvw'
-        self._voiced_consonants = u'bdglmnrRv'
-        self._labiodentals = u'fv'
-        self._coronals = u'dlrnstzʧ'
-        self._palatals = u'yʎ'
-        self._bilabials = "bmp"
-        self._velars = u'gjq'
+        self._double_letters = {u'rr':u'R',u'll':u'ʎ',u'ch':u'ʧ',u'gu':u'g',u'qu':u'q'}
+        self._nasals = set([u'm',u'n',u'ñ'])
+        self._laterals = set([u'l'])
+        self._vowels = set([u'a',u'e',u'i',u'o',u'u',u'á',u'é',u'í',u'ó',u'ú'])
+        self._voiced = set([u'a',u'e',u'i',u'o',u'u',u'b',u'd',u'g',u'l',u'm',
+                        u'n',u'r',u'R',u'v',u'w'])
+        self._voiced_consonants = set([u'b',u'd',u'g',u'l',u'm',u'n',u'r',u'R',u'v'])
+        self._labiodentals = set([u'f',u'v'])
+        self._coronals = set([u'd',u'l',u'r',u'n',u's',u't',u'z',u'ʧ'])
+        self._palatals = set([u'y',u'ʎ'])
+        self._bilabials = set([u'b',u'm',u'p'])
+        self._velars = set([u'g',u'j',u'q'])
         self._pause = u'‖'
 
     def transcribe_syllable(self, syllable, previous=None, next=None,
@@ -46,9 +43,8 @@ class Transcriptor(BaseTranscriptor):
             cross_syllabic_next = next[0]
         else:
             cross_syllabic_next = None
-        syllable = subsistute_character(syllable)
+        syllable = self.kill_doubles(syllable)
         syllable_length = len(syllable)
-        syllable_length
         if syllable_length == 1:
             return rule_dict[syllable[0]](
                 cross_syllabic_previous,
@@ -80,14 +76,22 @@ class Transcriptor(BaseTranscriptor):
                 transcribed_syllable += ipa_symbol
         return transcribed_syllable
 
+    def kill_doubles(self,syllable):
+        if len(syllable) == 1:
+            return syllable
+        double = syllable[0] + syllable[1]
+        if double in self._double_letters.keys():
+            syllable = self._double_letters[double] + syllable[2:] 
+        return syllable
+
     def transcription_rules(self):
 
         def transcribe_a(previous, next, index):
             return u'a'
                                                                                                 
         def transcribe_b(previous, next, index):
-            if not previous \
-                    or previous in self._nasals + self._pause:
+            if not previous or previous in self._nasals \
+                    or previous == self._pause:
                 return u'b'
             else:
                 return u'β'
@@ -103,7 +107,7 @@ class Transcriptor(BaseTranscriptor):
          
         def transcribe_d(previous, next, index): 
             if not previous or previous in self._nasals \
-                    or previous in self._laterals + self._pause:
+                    or previous in self._laterals or previous == self._pause:
                 return u'd'
             else:
                 return u'ð'
@@ -123,7 +127,8 @@ class Transcriptor(BaseTranscriptor):
         def transcribe_g(previous, next, index):
             if next in [u'i',u'e']:
                 return u'x'
-            elif not previous or previous in self._nasals + self._pause:
+            elif not previous or previous in self._nasals \
+                        or previous == self._pause:
                 return u'ɡ'
             else:
                 return u'ɣ'
@@ -149,7 +154,7 @@ class Transcriptor(BaseTranscriptor):
 
         def transcribe_ll(previous, next, index):
             if not previous or previous in self._nasals \
-                    or previous in self._laterals + self._pause:
+                    or previous in self._laterals or previous == self._pause:
                 return u'ʑ' # maybe u'ʎ'
             else:
                 return u'ʝ'
@@ -189,8 +194,8 @@ class Transcriptor(BaseTranscriptor):
             return u'k'
 
         def transcribe_r(previous, next, index):
-            if not previous or previous in [self._pause,u'l',u'n',u's']:
-                return u'r'
+            if not previous or previous in [self._pause,u'l',u'n',u's']: 
+                return u'r'                 # make an attribute maybe
             else:
                 return u'ɾ'
 
@@ -207,7 +212,7 @@ class Transcriptor(BaseTranscriptor):
             return u't'
 
         def transcribe_u(previous, next, index):
-            if next in [u'i',u'e',u'a']:
+            if next in [u'i',u'e',u'a']: # att?
                 return u'w'
             else:
                 return u'u'
@@ -231,7 +236,7 @@ class Transcriptor(BaseTranscriptor):
             if previous == None and next == None:
                 return u'i'
             elif not previous or previous in self._nasals \
-                        or previous in self._laterals + pause:
+                    or previous in self._laterals or previous == self._pause:
                 return u'ʑ' # maybe u'ʎ'
             elif previous == u'o':
                 return u'i'
@@ -243,14 +248,7 @@ class Transcriptor(BaseTranscriptor):
                 return u'z'
             else:
                 return u's'
-
-        def subsistute_character(syllable):
-            syllable = re.sub(self._rr,u'R',syllable) 
-            syllable = re.sub(self._ll,u'ʎ',syllable) 
-            syllable = re.sub(self._ch,u'ʧ',syllable) 
-            syllable = re.sub(self._gu,u'g',syllable) 
-            syllable = re.sub(self._qu,u'q',syllable) 
-            return syllable
+                
         return locals()
 
     def mark_stress(self, syllable_list):
