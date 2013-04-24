@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import re
 
-from stevens.languages import BaseTranscriptor
-from stevens.hyphenation import get_hyphenator
+#from stevens.languages import BaseTranscriptor
+#from stevens.hyphenation import get_hyphenator
 
 
-class Transcriptor(BaseTranscriptor):
+class Transcriptor(object):
     # untested as part of the class. the gist runs well, too early to say awesome,
     # but looking good.
     # set all of the text processing constants to attributes.
@@ -13,24 +13,24 @@ class Transcriptor(BaseTranscriptor):
     # can change.
     def __init__(self, *args, **kwargs):
         super(Transcriptor, self).__init__(*args, **kwargs)
-        if not self._hyphenator:
-            self._hyphenator = get_hyphenator("es_ES")
+        #if not self._hyphenator:
+            #self._hyphenator = get_hyphenator("es_ES")
         self._punctuation = re.compile(r"[ \.,\?\!¡¿\n\t\s]+")
         self._grave = re.compile(u'[aeiouns]')
         self._irregular = re.compile(u'[áéíóú]')
-        self._double_letters = {u'rr':u'R',u'll':u'ʎ',u'ch':u'ʧ',u'gu':u'g',u'qu':u'q'}
-        self._double_letters_set = set(self._double_letters.keys())
-        self._nasals = set([u'm',u'n',u'ñ'])
-        self._laterals = set([u'l'])
-        self._vowels = set([u'a',u'e',u'i',u'o',u'u',u'á',u'é',u'í',u'ó',u'ú'])
-        self._voiced = set([u'a',u'e',u'i',u'o',u'u',u'b',u'd',u'g',u'l',u'm',
-                            u'n',u'r',u'R',u'v',u'w'])
-        self._voiced_consonants = set([u'b',u'd',u'g',u'l',u'm',u'n',u'r',u'R',u'v'])
-        self._labiodentals = set([u'f',u'v'])
-        self._coronals = set([u'd',u'l',u'r',u'n',u's',u't',u'z',u'ʧ'])
-        self._palatals = set([u'y',u'ʎ'])
-        self._bilabials = set([u'b',u'm',u'p'])
-        self._velars = set([u'g',u'j',u'q'])
+        self._double_consonants = {u'rr':u'R',u'll':u'ʎ',u'ch':u'ʧ',
+                                    u'gu':u'g',u'qu':u'q'}
+        self._double_consonants_set = set(self._double_consonants.keys())
+        self._nasals = u'mnñ'
+        self._laterals = u'l'
+        self._vowels = u'aeiouáéíóú'
+        self._voiced = u'aeioubdglmnrRvw'
+        self._voiced_consonants = u'bdglmnrRv'
+        self._labiodentals = u'fv'
+        self._coronals = u'dlrnstzʧ'
+        self._palatals = u'yʎ'
+        self._bilabials = u'bmp'
+        self._velars = u'gjq'
         self._pause = u'‖'
 
     def transcribe_syllable(self, syllable, previous=None, next=None,
@@ -44,7 +44,7 @@ class Transcriptor(BaseTranscriptor):
             cross_syllabic_next = next[0]
         else:
             cross_syllabic_next = None
-        syllable = self.kill_doubles(syllable)
+        syllable = self.remove_double_consonants(syllable)
         syllable_length = len(syllable)
         if syllable_length == 1:
             return rule_dict[syllable[0]](
@@ -77,13 +77,25 @@ class Transcriptor(BaseTranscriptor):
                 transcribed_syllable += ipa_symbol
         return transcribed_syllable
 
-    def kill_doubles(self,syllable):
+    def remove_double_consonants(self,syllable):
         if len(syllable) == 1:
             return syllable
         double = syllable[0] + syllable[1]
-        if double in self._double_letters_set:
-            syllable = self._double_letters[double] + syllable[2:] 
+        if double in self._double_consonants_set:
+            syllable = self._double_consonants[double] + syllable[2:] 
         return syllable
+
+    def find_stress(self, syllable_list):
+        ### maybe change name to find_stress
+        if len(syllable_list) == 1:
+            return None 
+            for index, syllable in enumerate(syllable_list):
+                if self._irregular.search(syllable):
+                    return index
+            if self._grave.search(syllable_list[-1][-1]):
+                return len(syllable_list) - 2
+            else:
+                return len(syllable_list) - 1
 
     def transcription_rules(self):
 
@@ -179,7 +191,7 @@ class Transcriptor(BaseTranscriptor):
             else:
                 return u'ɴ'
 
-        def transcribe_enye(previous, next):
+        def transcribe_enye(previous, next, index):
             return u'ɲ'
 
         def transcribe_o(previous, next, index):
@@ -235,7 +247,7 @@ class Transcriptor(BaseTranscriptor):
             if index == 0:
                 return u'x'
             else:
-                return u'ks' # need a better smbol here...maybe
+                return u'ks' # need a better sembol here...maybe
 
         def transcribe_y(previous, next, index):
             if previous == None and next == None:
@@ -256,14 +268,4 @@ class Transcriptor(BaseTranscriptor):
                 
         return locals()
 
-    def mark_stress(self, syllable_list):
-        ### maybe change name to find_stress
-        if len(syllable_list) == 1:
-            return None 
-            for index, syllable in enumerate(syllable_list):
-                if self._irregular.search(syllable):
-                    return index
-            if self._grave.search(syllable_list[-1][-1]):
-                return len(syllable_list) - 2
-            else:
-                return len(syllable_list) - 1
+
