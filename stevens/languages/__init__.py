@@ -82,5 +82,5 @@ class BaseTranscriptor(object):
                 stress_mark=stress_mark
             )
             transcription.append(transcribed_syllable)
-        stressed_transcription = self.mark_stress(transcription)
+        stressed_transcription = self.find_stress(transcription)
         return self._syllabic_separator.join(stressed_transcription)
