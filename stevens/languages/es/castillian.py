@@ -221,7 +221,11 @@ class Transcriptor(BaseTranscriptor):
             return u'u'
 
         def transcribe_v(previous, next, index):
-            return u'v'
+            if not previous or previous in self._nasals \
+                    or previous == self._pause:
+                return u'b'
+            else:
+                return u'β'
 
         def transcribe_w(previous, next, index):
             return u'w'
