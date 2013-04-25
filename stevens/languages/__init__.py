@@ -7,7 +7,7 @@ class BaseTranscriptor(object):
     def __init__(self, text=None, hyphenator=None, lang="es_ES", alphabet="IPA",
                  syllabic_separator=u".", word_separator=u"|",
                  sentence_separator=u"/", flattern=True,
-                 stress_mark=u"'"):
+                 stress_mark=u"'", phrase_separator=u'‖'):
         """
         :param text: unicode string to transcribe
         :param hyphenator: Hyphenator object
@@ -24,6 +24,7 @@ class BaseTranscriptor(object):
         self._syllabic_separator = syllabic_separator
         self._word_separator = word_separator
         self._stress_mark = stress_mark
+        self._phrase_separator = phrase_separator
 
     def get_syllables(self, word):
         h = self._hyphenator
@@ -42,13 +43,13 @@ class BaseTranscriptor(object):
                 next = items[index + 1]
         return previous, next
 
-    def get_words(self, text):
+    def get_phrases(self, text):
         text = (text or self._text).lower()
         return [w for w in re.split(self._punctuation, text) if len(w) > 0]
 
-    def get_phrases(self, text):
-        pass
-
+    def get_words(self, phrase):
+        return phrase.split()
+        
     def transcribe(self, text=None, syllabic_separator=None, alphabet=None,
                    stress_mark=None, word_separator=None, phrase_separator=None):
         phrases = self.get_phrases(text)
