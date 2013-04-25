@@ -15,7 +15,7 @@ class Transcriptor(object):
         self._grave = re.compile(u'[aeiouns]')
         self._irregular = re.compile(u'[áéíóú]')
         self._double_consonants = {u'rr':u'R',u'll':u'ʎ',u'ch':u'ʧ',
-                                    u'gu':u'g',u'qu':u'q'}
+                                   u'gu':u'g',u'qu':u'q'}
         self._double_consonants_set = set(self._double_consonants.keys())
         self._nasals = u'mnñ'
         self._laterals = u'l'
