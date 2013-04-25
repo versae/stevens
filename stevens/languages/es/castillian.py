@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 import re
 
-#from stevens.languages import BaseTranscriptor
-#from stevens.hyphenation import get_hyphenator
+from stevens.languages import BaseTranscriptor
+from stevens.hyphenation import get_hyphenator
 
 
 class Transcriptor(object):
-    # untested as part of the class. the gist runs well, too early to say awesome,
-    # but looking good.
-    # set all of the text processing constants to attributes.
-    # don't know how this works with transcription_rules functions.
-    # can change.
+
     def __init__(self, *args, **kwargs):
         super(Transcriptor, self).__init__(*args, **kwargs)
-        #if not self._hyphenator:
-            #self._hyphenator = get_hyphenator("es_ES")
+        if not self._hyphenator:
+            self._hyphenator = get_hyphenator("es_ES")
         self._punctuation = re.compile(r"[ \.,\?\!¡¿\n\t\s]+")
         self._grave = re.compile(u'[aeiouns]')
         self._irregular = re.compile(u'[áéíóú]')
@@ -86,7 +82,6 @@ class Transcriptor(object):
         return syllable
 
     def find_stress(self, syllable_list):
-        ### maybe change name to find_stress
         if len(syllable_list) == 1:
             return None 
             for index, syllable in enumerate(syllable_list):
