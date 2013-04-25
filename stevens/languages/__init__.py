@@ -46,8 +46,30 @@ class BaseTranscriptor(object):
         text = (text or self._text).lower()
         return [w for w in re.split(self._punctuation, text) if len(w) > 0]
 
+    def get_phrases(self, text):
+        pass
+
     def transcribe(self, text=None, syllabic_separator=None, alphabet=None,
-                   stress_mark=None, word_separator=None):
+                   stress_mark=None, word_separator=None, phrase_separator=None):
+        phrases = self.get_phrases(text)
+        transcription = []
+        phrases_length = len(phrases)
+        for i, phrase in enumerate(phrases):
+            previous, next = self.get_surroundings(i, phrase, phrases,
+                                                   phrases_length)
+            transcribed_phrase = self.transcribe_phrase(
+                phrase,
+                previous=previous,
+                next=next,
+                syllabic_separator=syllabic_separator,
+                alphabet=alphabet,
+                stress_mark=stress_mark
+            )
+            transcription.append(transcribed_phrase)
+        return self._phrase_separator.join(transcription)
+
+    def transcribe_phrase(self, phrase, previous=None, next=None
+                          stress_mark=None, word_separator=None):
         words = self.get_words(text)
         transcription = []
         words_length = len(words)
