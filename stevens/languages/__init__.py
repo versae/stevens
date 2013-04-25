@@ -6,8 +6,8 @@ class BaseTranscriptor(object):
 
     def __init__(self, text=None, hyphenator=None, lang="es_ES", alphabet="IPA",
                  syllabic_separator=u".", word_separator=u"|",
-                 sentence_separator=u"/", flattern=True,
-                 stress_mark=u"'", phrase_separator=u'‖'):
+                 phrase_separator=u"/", flattern=True,
+                 stress_mark=u"'"):
         """
         :param text: unicode string to transcribe
         :param hyphenator: Hyphenator object
