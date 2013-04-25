@@ -17,7 +17,7 @@ class SpanishTestCase(unittest.TestCase):
         text = u"Esto es una prueba"
         transcriptor = castillian.Transcriptor()
         transcribed_text = transcriptor.transcribe(text)
-        self.assertEqual(transcribed_text, u"ˈes.to|es|ˈuna|ˈprue.ba")
+        self.assertEqual(transcribed_text, u"ˈes.to|es|ˈu.na|ˈpɾwe.βa")
 
 
 if __name__ == '__main__':
