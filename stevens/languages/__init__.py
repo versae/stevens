@@ -71,7 +71,7 @@ class BaseTranscriptor(object):
 
     def transcribe_phrase(self, phrase, previous=None, next=None
                           stress_mark=None, word_separator=None):
-        words = self.get_words(text)
+        words = self.get_words(phrase)
         transcription = []
         words_length = len(words)
         for i, word in enumerate(words):
