@@ -69,8 +69,9 @@ class BaseTranscriptor(object):
             transcription.append(transcribed_phrase)
         return self._phrase_separator.join(transcription)
 
-    def transcribe_phrase(self, phrase, previous=None, next=None
-                          stress_mark=None, word_separator=None):
+    def transcribe_phrase(self, phrase, previous=None, next=None,
+                          syllabic_separator=None, alphabet=None
+                          word_separator=None, stress_mark=None):
         words = self.get_words(phrase)
         transcription = []
         words_length = len(words)
