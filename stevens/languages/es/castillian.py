@@ -118,7 +118,7 @@ class Transcriptor(BaseTranscriptor):
             else:
                 return u'k'
 
-        @self.rule(u"h")
+        @self.rule(u"ch")
         def transcribe_ch(previous, next, index):
             return u'ʧ'
 
@@ -134,7 +134,7 @@ class Transcriptor(BaseTranscriptor):
         def transcribe_e(previous, next, index):
             return u'e'
 
-        @self.rule(u"e")
+        @self.rule(u"é")
         def transcribe_stressed_e(previous, next, index):
             return u'e'
 
@@ -166,7 +166,7 @@ class Transcriptor(BaseTranscriptor):
             else:
                 return u'i'
 
-        @self.rule(u"i")
+        @self.rule(u"í")
         def transcribe_stressed_i(previous, next, index):
             return u'i'
 
@@ -179,7 +179,7 @@ class Transcriptor(BaseTranscriptor):
         def transcribe_l(previous, next, index):
             return u'l'  # this takes diacritics based on next
 
-        @self.rule(u"l")
+        @self.rule(u"ll")
         def transcribe_ll(previous, next, index):
             if not previous or previous in self._nasals \
                     or previous in self._laterals or previous == self._pause:
@@ -208,7 +208,7 @@ class Transcriptor(BaseTranscriptor):
             else:
                 return u'ɴ'
 
-        @self.rule(u"e")
+        @self.rule(u"ñ")
         def transcribe_enye(previous, next, index):
             return u'ɲ'
 
@@ -216,7 +216,7 @@ class Transcriptor(BaseTranscriptor):
         def transcribe_o(previous, next, index):
             return u'o'
 
-        @self.rule(u"o")
+        @self.rule(u"ó")
         def transcribe_stressed_o(previous, next, index):
             return u'o'
 
@@ -235,7 +235,7 @@ class Transcriptor(BaseTranscriptor):
             else:
                 return u'ɾ'
 
-        @self.rule(u"l")
+        @self.rule(u"R")
         def transcribe_trill(previous, next, index):
             return u'r'
 
@@ -257,7 +257,7 @@ class Transcriptor(BaseTranscriptor):
             else:
                 return u'u'
 
-        @self.rule(u"u")
+        @self.rule(u"ú")
         def transcribe_stressed_u(previous, next, index):
             return u'u'
 

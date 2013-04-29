@@ -31,7 +31,7 @@ class BaseTranscriptor(object):
     def rule(self, chunk):
         """Decorator that associates a function to a chunk to apply on"""
         def wrapper(fn):
-            self.rules[chunk] = fn
+            self._rules[chunk] = fn
         return wrapper
 
     def _get_rules(self):
