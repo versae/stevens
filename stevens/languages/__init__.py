@@ -4,8 +4,8 @@ import re
 
 class BaseTranscriptor(object):
 
-    def __init__(self, text=None, hyphenator=None, lang="es_ES", alphabet="IPA",
-                 syllabic_separator=u".", word_separator=u"|",
+    def __init__(self, text=None, hyphenator=None, lang="es_ES",
+                 alphabet="IPA", syllabic_separator=u".", word_separator=u"|",
                  phrase_separator=u"/", flattern=True,
                  stress_mark=u"'"):
         """
@@ -25,6 +25,18 @@ class BaseTranscriptor(object):
         self._word_separator = word_separator
         self._stress_mark = stress_mark
         self._phrase_separator = phrase_separator
+        self._rules = {}
+        self._transcription_rules()
+
+    def rule(self, chunk):
+        """Decorator that associates a function to a chunk to apply on"""
+        def wrapper(fn):
+            self.rules[chunk] = fn
+        return wrapper
+
+    def _get_rules(self):
+        return self._rules
+    rules = property(fget=_get_rules)
 
     def get_syllables(self, word):
         h = self._hyphenator
@@ -49,9 +61,10 @@ class BaseTranscriptor(object):
 
     def get_words(self, phrase):
         return phrase.split()
-        
+
     def transcribe(self, text=None, syllabic_separator=None, alphabet=None,
-                   stress_mark=None, word_separator=None, phrase_separator=None):
+                   stress_mark=None, word_separator=None,
+                   phrase_separator=None):
         phrases = self.get_phrases(text)
         transcription = []
         phrases_length = len(phrases)
@@ -70,7 +83,7 @@ class BaseTranscriptor(object):
         return self._phrase_separator.join(transcription)
 
     def transcribe_phrase(self, phrase, previous=None, next=None,
-                          syllabic_separator=None, alphabet=None
+                          syllabic_separator=None, alphabet=None,
                           word_separator=None, stress_mark=None):
         words = self.get_words(phrase)
         transcription = []

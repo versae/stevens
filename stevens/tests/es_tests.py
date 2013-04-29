@@ -3,6 +3,9 @@
 import logging
 import unittest
 
+from stevens.languages.es import castillian
+
+
 logging.basicConfig(
     format="%(asctime)s %(levelname)s %(name)s %(message)s",
     level=logging.DEBUG,
@@ -12,8 +15,6 @@ logging.basicConfig(
 class SpanishTestCase(unittest.TestCase):
 
     def test_import_castillian(self):
-        from importlib import import_module
-        castillian = import_module("stevens.languages.es.castillian")
         text = u"Esto es una prueba"
         transcriptor = castillian.Transcriptor()
         transcribed_text = transcriptor.transcribe(text)

@@ -5,7 +5,7 @@ from stevens.languages import BaseTranscriptor
 from stevens.hyphenation import get_hyphenator
 
 
-class Transcriptor(object):
+class Transcriptor(BaseTranscriptor):
 
     def __init__(self, *args, **kwargs):
         super(Transcriptor, self).__init__(*args, **kwargs)
@@ -14,8 +14,8 @@ class Transcriptor(object):
         self._punctuation = re.compile(r"[ \.,\?\!¡¿\n\t]+")
         self._grave = re.compile(u'[aeiouns]')
         self._irregular = re.compile(u'[áéíóú]')
-        self._double_consonants = {u'rr':u'R',u'll':u'ʎ',u'ch':u'ʧ',
-                                   u'gu':u'g',u'qu':u'q'}
+        self._double_consonants = {u'rr': u'R', u'll': u'ʎ', u'ch': u'ʧ',
+                                   u'gu': u'g', u'qu': u'q'}
         self._double_consonants_set = set(self._double_consonants.keys())
         self._nasals = u'mnñ'
         self._laterals = u'l'
@@ -43,9 +43,11 @@ class Transcriptor(object):
         syllable = self.remove_double_consonants(syllable)
         syllable_length = len(syllable)
         if syllable_length == 1:
-            return rule_dict[syllable[0]](
+            rule_func = self.rules.get(syllable[0],
+                                       lambda p, n, i: syllable[0])
+            return rule_func(
                 cross_syllabic_previous,
-                cross_syllabic_next,0
+                cross_syllabic_next, 0
             )
         for index, letter in enumerate(syllable):
             previous, next = self.get_surroundings(
@@ -55,35 +57,38 @@ class Transcriptor(object):
                 syllable_length
             )
             if index == 0:
-                ipa_symbol = rule_dict[letter](
+                rule_func = self.rules.get(letter, lambda p, n, i: syllable[0])
+                ipa_symbol = rule_func(
                     cross_syllabic_previous,
                     next,
                     index
                 )
                 transcribed_syllable += ipa_symbol
             elif index == len(syllable) - 1:
-                ipa_symbol = rule_dict[letter](
+                rule_func = self.rules.get(letter, lambda p, n, i: syllable[0])
+                ipa_symbol = rule_func(
                     previous,
                     cross_syllabic_next,
                     index
                 )
                 transcribed_syllable += ipa_symbol
             else:
-                ipa_symbol = rule_dict[letter](previous,next,index)
+                rule_func = self.rules.get(letter, lambda p, n, i: syllable[0])
+                ipa_symbol = rule_func(previous, next, index)
                 transcribed_syllable += ipa_symbol
         return transcribed_syllable
 
-    def remove_double_consonants(self,syllable):
+    def remove_double_consonants(self, syllable):
         if len(syllable) == 1:
             return syllable
         double = syllable[0] + syllable[1]
         if double in self._double_consonants_set:
-            syllable = self._double_consonants[double] + syllable[2:] 
+            syllable = self._double_consonants[double] + syllable[2:]
         return syllable
 
     def find_stress(self, syllable_list):
         if len(syllable_list) == 1:
-            return None 
+            return None
             for index, syllable in enumerate(syllable_list):
                 if self._irregular.search(syllable):
                     return index
@@ -92,84 +97,101 @@ class Transcriptor(object):
             else:
                 return len(syllable_list) - 1
 
-    def transcription_rules(self):
+    def _transcription_rules(self):
 
+        @self.rule(u"a")
         def transcribe_a(previous, next, index):
             return u'a'
-                                                                                                
+
+        @self.rule(u"b")
         def transcribe_b(previous, next, index):
             if not previous or previous in self._nasals \
                     or previous == self._pause:
                 return u'b'
             else:
                 return u'β'
-         
+
+        @self.rule(u"c")
         def transcribe_c(previous, next, index):
-            if next in [u'i',u'o']:
-                return u's' # or u'θ'
+            if next in [u'i', u'o']:
+                return u's'  # or u'θ'
             else:
                 return u'k'
 
+        @self.rule(u"h")
         def transcribe_ch(previous, next, index):
             return u'ʧ'
-         
-        def transcribe_d(previous, next, index): 
+
+        @self.rule(u"d")
+        def transcribe_d(previous, next, index):
             if not previous or previous in self._nasals \
                     or previous in self._laterals or previous == self._pause:
                 return u'd'
             else:
                 return u'ð'
 
+        @self.rule(u"e")
         def transcribe_e(previous, next, index):
             return u'e'
 
+        @self.rule(u"e")
         def transcribe_stressed_e(previous, next, index):
             return u'e'
-         
+
+        @self.rule(u"f")
         def transcribe_f(previous, next, index):
             if next in self._voiced:
                 return u'v'
             else:
                 return u'f'
-         
+
+        @self.rule(u"g")
         def transcribe_g(previous, next, index):
-            if next in [u'i',u'e']:
+            if next in [u'i', u'e']:
                 return u'x'
-            elif not previous or previous in self._nasals \
-                        or previous == self._pause:
+            elif (not previous or previous in self._nasals
+                    or previous == self._pause):
                 return u'ɡ'
             else:
                 return u'ɣ'
 
+        @self.rule(u"h")
         def transcribe_h(previous, next, index):
             return ''
 
+        @self.rule(u"i")
         def transcribe_i(previous, next, index):
-            if next in [u'e',u'a',u'o']:
+            if next in [u'e', u'a', u'o']:
                 return u'j'
             else:
                 return u'i'
 
-        def transcribe_stressed_i(previous,next):
+        @self.rule(u"i")
+        def transcribe_stressed_i(previous, next, index):
             return u'i'
-         
+
+        @self.rule(u"j")
         def transcribe_j(previous, next, index):
-            return u'x' # this may vary based on prev, next, 
-                        # possibly need a uvular u'χ'
+            return u'x'  # this may vary based on prev, next,
+                         # possibly need a uvular u'χ'
 
+        @self.rule(u"l")
         def transcribe_l(previous, next, index):
-            return u'l' # this takes diacritics based on next
+            return u'l'  # this takes diacritics based on next
 
+        @self.rule(u"l")
         def transcribe_ll(previous, next, index):
             if not previous or previous in self._nasals \
                     or previous in self._laterals or previous == self._pause:
-                return u'ʑ' # maybe u'ʎ'
+                return u'ʑ'  # maybe u'ʎ'
             else:
                 return u'ʝ'
 
+        @self.rule(u"m")
         def transcribe_m(previous, next, index):
             return u'm'
-         
+
+        @self.rule(u"n")
         def transcribe_n(previous, next, index):
             if not next or next in self._vowels:
                 return u'n'
@@ -186,48 +208,60 @@ class Transcriptor(object):
             else:
                 return u'ɴ'
 
+        @self.rule(u"e")
         def transcribe_enye(previous, next, index):
             return u'ɲ'
 
+        @self.rule(u"o")
         def transcribe_o(previous, next, index):
             return u'o'
 
+        @self.rule(u"o")
         def transcribe_stressed_o(previous, next, index):
             return u'o'
 
+        @self.rule(u"p")
         def transcribe_p(previous, next, index):
             return u'p'
 
+        @self.rule(u"q")
         def transcribe_q(previous, next, index):
             return u'k'
 
+        @self.rule(u"r")
         def transcribe_r(previous, next, index):
-            if not previous or previous in [self._pause,u'l',u'n',u's']: 
-                return u'r'                 # make an attribute maybe
+            if not previous or previous in [self._pause, u'l', u'n', u's']:
+                return u'r'  # make an attribute maybe
             else:
                 return u'ɾ'
 
+        @self.rule(u"l")
         def transcribe_trill(previous, next, index):
             return u'r'
 
+        @self.rule(u"s")
         def transcribe_s(previous, next, index):
             if next in self._voiced_consonants:
                 return u'z'
             else:
                 return u's'
 
+        @self.rule(u"t")
         def transcribe_t(previous, next, index):
             return u't'
 
+        @self.rule(u"u")
         def transcribe_u(previous, next, index):
-            if next in [u'i',u'e',u'a']: # att?
+            if next in [u'i', u'e', u'a']:  # att?
                 return u'w'
             else:
                 return u'u'
 
+        @self.rule(u"u")
         def transcribe_stressed_u(previous, next, index):
             return u'u'
 
+        @self.rule(u"v")
         def transcribe_v(previous, next, index):
             if not previous or previous in self._nasals \
                     or previous == self._pause:
@@ -235,32 +269,32 @@ class Transcriptor(object):
             else:
                 return u'β'
 
+        @self.rule(u"w")
         def transcribe_w(previous, next, index):
             return u'w'
 
+        @self.rule(u"x")
         def transcribe_x(previous, next, index):
             if index == 0:
                 return u'x'
             else:
-                return u'ks' # need a better sembol here...maybe
+                return u'ks'  # need a better sembol here...maybe
 
+        @self.rule(u"y")
         def transcribe_y(previous, next, index):
-            if previous == None and next == None:
+            if previous is None and next is None:
                 return u'i'
             elif not previous or previous in self._nasals \
                     or previous in self._laterals or previous == self._pause:
-                return u'ʑ' # maybe u'ʎ'
+                return u'ʑ'  # maybe u'ʎ'
             elif previous == u'o':
                 return u'i'
             else:
-                return u'ʝ' 
+                return u'ʝ'
 
+        @self.rule(u"z")
         def transcribe_z(previous, next, index):
             if next in self._voiced_consonants:
                 return u'z'
             else:
                 return u's'
-                
-        return locals()
-
-
