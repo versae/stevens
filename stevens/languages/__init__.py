@@ -105,6 +105,8 @@ class BaseTranscriptor(object):
     def transcribe_word(self, word, previous=None, next=None,
                         syllabic_separator=None, alphabet=None,
                         stress_mark=None):
+        if not stress_mark:
+            stress_mark = self._stress_mark
         syllables = self.get_syllables(word)
         transcription = []
         syllables_len = len(syllables)
@@ -120,7 +122,7 @@ class BaseTranscriptor(object):
             )
             transcription.append(transcribed_syllable)
         stress_index = self.find_stress(transcription)
-        if stress_index:
+        if stress_index != None:
             transcription[stress_index] = \
                 stress_mark + transcription[stress_index]
         return self._syllabic_separator.join(transcription)

@@ -42,7 +42,7 @@ class SpanishTestCase(unittest.TestCase):
         syllable = u"que"
         transcriptor = castillian.Transcriptor()
         transcribed_text = transcriptor.remove_double_consonants(syllable)
-        self.assertEqual(transcribed_text, u"ke")
+        self.assertEqual(transcribed_text, u"qe")
 
     def test_replace_ch(self):
         syllable = u"cha"
@@ -67,31 +67,31 @@ class SpanishTestCase(unittest.TestCase):
         self.assertEqual(transcribed_text, u"i")
 
     def test_find_stress(self):
-        text = u"página"
+        syllable_list = [u"pá",u"gi",u"na"]
         transcriptor = castillian.Transcriptor()
-        transcribed_text = transcriptor.find_stress(text)
+        transcribed_text = transcriptor.find_stress(syllable_list)
         self.assertEqual(transcribed_text, 0)
 
     def test_find_stress(self):
-        text = u"ojalá"
+        syllable_list = [u"o",u"ja",u"lá"]
         transcriptor = castillian.Transcriptor()
-        transcribed_text = transcriptor.find_stress(text)
+        transcribed_text = transcriptor.find_stress(syllable_list)
         self.assertEqual(transcribed_text, 2)
 
     def test_find_stress(self):
-        text = u"problema"
+        syllable_list = [u"pro",u"ble",u"ma"]
         transcriptor = castillian.Transcriptor()
-        transcribed_text = transcriptor.find_stress(text)
+        transcribed_text = transcriptor.find_stress(syllable_list)
         self.assertEqual(transcribed_text, 1)
 
     def test_find_stress(self):
-        text = u"verdad"
+        syllable_list = [u"ver",u"dad"]
         transcriptor = castillian.Transcriptor()
-        transcribed_text = transcriptor.find_stress(text)
+        transcribed_text = transcriptor.find_stress(syllable_list)
         self.assertEqual(transcribed_text, 1)
 
     def test_find_stress(self):
-        text = u"conectividad"
+        syllable_list = [u"co",u"nec",u"ti",u"vi",u"dad"]
         transcriptor = castillian.Transcriptor()
         transcribed_text = transcriptor.find_stress(text)
         self.assertEqual(transcribed_text, 4)

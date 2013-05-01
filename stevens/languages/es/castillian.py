@@ -89,6 +89,7 @@ class Transcriptor(BaseTranscriptor):
     def find_stress(self, syllable_list):
         if len(syllable_list) == 1:
             return None
+        else:
             for index, syllable in enumerate(syllable_list):
                 if self._irregular.search(syllable):
                     return index
