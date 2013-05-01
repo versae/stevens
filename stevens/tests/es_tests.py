@@ -55,45 +55,47 @@ class SpanishTestCase(unittest.TestCase):
         previous = u"una"
         next = u"na"
         transcriptor = castillian.Transcriptor()
-        transcribed_text = transcriptor.transcribe_syllable(text,previous,next)
+        transcribed_text = transcriptor.transcribe_syllable(text,
+                                                            previous, next)
         self.assertEqual(transcribed_text, u"βwe")
 
-    def test_transcribe_syllable(self):
+    def test_transcribe_syllable_2(self):
         text = u"hi"
         previous = u"un"
         next = u"lo"
         transcriptor = castillian.Transcriptor()
-        transcribed_text = transcriptor.transcribe_syllable(text,previous,next)
+        transcribed_text = transcriptor.transcribe_syllable(text,
+                                                            previous, next)
         self.assertEqual(transcribed_text, u"i")
 
     def test_find_stress(self):
-        syllable_list = [u"pá",u"gi",u"na"]
+        syllable_list = [u"pá", u"gi", u"na"]
         transcriptor = castillian.Transcriptor()
         transcribed_text = transcriptor.find_stress(syllable_list)
         self.assertEqual(transcribed_text, 0)
 
-    def test_find_stress(self):
-        syllable_list = [u"o",u"ja",u"lá"]
+    def test_find_stress_2(self):
+        syllable_list = [u"o", u"ja", u"lá"]
         transcriptor = castillian.Transcriptor()
         transcribed_text = transcriptor.find_stress(syllable_list)
         self.assertEqual(transcribed_text, 2)
 
-    def test_find_stress(self):
-        syllable_list = [u"pro",u"ble",u"ma"]
+    def test_find_stress_3(self):
+        syllable_list = [u"pro", "ble", u"ma"]
         transcriptor = castillian.Transcriptor()
         transcribed_text = transcriptor.find_stress(syllable_list)
         self.assertEqual(transcribed_text, 1)
 
-    def test_find_stress(self):
-        syllable_list = [u"ver",u"dad"]
+    def test_find_stress_4(self):
+        syllable_list = [u"ver", u"dad"]
         transcriptor = castillian.Transcriptor()
         transcribed_text = transcriptor.find_stress(syllable_list)
         self.assertEqual(transcribed_text, 1)
 
-    def test_find_stress(self):
-        syllable_list = [u"co",u"nec",u"ti",u"vi",u"dad"]
+    def test_find_stress_5(self):
+        syllable_list = [u"co", u"nec", u"ti", u"vi", u"dad"]
         transcriptor = castillian.Transcriptor()
-        transcribed_text = transcriptor.find_stress(text)
+        transcribed_text = transcriptor.find_stress(syllable_list)
         self.assertEqual(transcribed_text, 4)
 
 
